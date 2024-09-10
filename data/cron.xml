@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_check_stavno_transactions" model="ir.cron">
+            <field name="name">Check 1Stavno Pending Transactions</field>
+            <field name="model_id" ref="model_stavno_api"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_check_pending_transactions()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_custom_payment_tree" model="ir.ui.view">
+            <field name="name">custom.payment.tree</field>
+            <field name="model">custom.payment</field>
+            <field name="arch" type="xml">
+                <tree string="Custom Payments" decoration-info="state == 'draft'" decoration-muted="state == 'cancelled'" decoration-success="state == 'posted'">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                    <field name="payment_date"/>
+                    <field name="state"/>
+                    <field name="installments"/>
+                    <field name="stavno_status"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_custom_payment_form" model="ir.ui.view">
+            <field name="name">custom.payment.form</field>
+            <field name="model">custom.payment</field>
+            <field name="arch" type="xml">
+                <form string="Custom Payment">
+                    <header>
+                        <button name="action_post" string="Post" type="object" class="oe_highlight" states="draft"/>
+                        <button name="action_cancel" string="Cancel" type="object" states="draft,posted"/>
+                        <button name="process_stavno_payment" string="Process 1Stavno Payment" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('stavno_status', '!=', 'pending')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,posted,cancelled"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_id"/>
+                                <field name="amount"/>
+                                <field name="payment_date"/>
+                            </group>
+                            <group>
+                                <field name="installments" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="stavno_transaction_id" readonly="1"/>
+                                <field name="stavno_status" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="1Stavno Information" attrs="{'invisible': [('stavno_status', '=', False)]}">
+                                <group>
+                                    <field name="stavno_transaction_id" readonly="1"/>
+                                    <field name="stavno_status" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_custom_payment_search" model="ir.ui.view">
+            <field name="name">custom.payment.search</field>
+            <field name="model">custom.payment</field>
+            <field name="arch" type="xml">
+                <search string="Search Custom Payments">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                    <field name="payment_date"/>
+                    <field name="stavno_transaction_id"/>
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Posted" name="posted" domain="[('state','=','posted')]"/>
+                    <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
+                    <filter string="1Stavno Pending" name="stavno_pending" domain="[('stavno_status','=','pending')]"/>
+                    <filter string="1Stavno Approved" name="stavno_approved" domain="[('stavno_status','=','approved')]"/>
+                    <filter string="1Stavno Rejected" name="stavno_rejected" domain="[('stavno_status','=','rejected')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="status" context="{'group_by':'state'}"/>
+                        <filter string="1Stavno Status" name="stavno_status" context="{'group_by':'stavno_status'}"/>
+                        <filter string="Payment Date" name="payment_date" context="{'group_by':'payment_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_custom_payment" model="ir.actions.act_window">
+            <field name="name">Custom Payments</field>
+            <field name="res_model">custom.payment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_custom_payment_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new custom payment
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_custom_payment"
+                  name="Custom Payments"
+                  action="action_custom_payment"
+                  parent="account.menu_finance"
+                  sequence="5"/>
+
+        <!-- 1Stavno Settings Form View -->
+        <record id="view_stavno_settings_form" model="ir.ui.view">
+            <field name="name">stavno.settings.form</field>
+            <field name="model">stavno.settings</field>
+            <field name="arch" type="xml">
+                <form string="1Stavno Settings">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="api_key_test"/>
+                            <field name="api_key_production"/>
+                            <field name="test_url"/>
+                            <field name="production_url"/>
+                            <field name="is_test_mode"/>
+                            <field name="display_installments"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- 1Stavno Settings Action -->
+        <record id="action_stavno_settings" model="ir.actions.act_window">
+            <field name="name">1Stavno Settings</field>
+            <field name="res_model">stavno.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <!-- 1Stavno Settings Menu Item -->
+        <menuitem id="menu_stavno_settings"
+                  name="1Stavno Settings"
+                  action="action_stavno_settings"
+                  parent="account.menu_finance_configuration"
+                  sequence="20"/>
+    </data>
+</odoo>

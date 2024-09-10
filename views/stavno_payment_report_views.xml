@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_stavno_payment_report_tree" model="ir.ui.view">
+            <field name="name">stavno.payment.report.tree</field>
+            <field name="model">stavno.payment.report</field>
+            <field name="arch" type="xml">
+                <tree string="1Stavno Payment Report">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                    <field name="payment_date"/>
+                    <field name="state"/>
+                    <field name="installments"/>
+                    <field name="stavno_status"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Graph View -->
+        <record id="view_stavno_payment_report_graph" model="ir.ui.view">
+            <field name="name">stavno.payment.report.graph</field>
+            <field name="model">stavno.payment.report</field>
+            <field name="arch" type="xml">
+                <graph string="1Stavno Payment Report" type="bar">
+                    <field name="payment_date" type="row"/>
+                    <field name="amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="view_stavno_payment_report_pivot" model="ir.ui.view">
+            <field name="name">stavno.payment.report.pivot</field>
+            <field name="model">stavno.payment.report</field>
+            <field name="arch" type="xml">
+                <pivot string="1Stavno Payment Report">
+                    <field name="payment_date" type="row"/>
+                    <field name="stavno_status" type="col"/>
+                    <field name="amount" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_stavno_payment_report_search" model="ir.ui.view">
+            <field name="name">stavno.payment.report.search</field>
+            <field name="model">stavno.payment.report</field>
+            <field name="arch" type="xml">
+                <search string="1Stavno Payment Report">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="payment_date"/>
+                    <field name="stavno_status"/>
+                    <filter string="Approved" name="approved" domain="[('stavno_status','=','approved')]"/>
+                    <filter string="Pending" name="pending" domain="[('stavno_status','=','pending')]"/>
+                    <filter string="Rejected" name="rejected" domain="[('stavno_status','=','rejected')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Customer" name="partner" context="{'group_by':'partner_id'}"/>
+                        <filter string="Payment Date" name="payment_date" context="{'group_by':'payment_date:month'}"/>
+                        <filter string="1Stavno Status" name="stavno_status" context="{'group_by':'stavno_status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Wizard Form View -->
+        <record id="view_stavno_payment_report_wizard_form" model="ir.ui.view">
+            <field name="name">stavno.payment.report.wizard.form</field>
+            <field name="model">stavno.payment.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Generate 1Stavno Payment Report">
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="partner_id"/>
+                        <field name="stavno_status"/>
+                    </group>
+                    <footer>
+                        <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Report -->
+        <record id="action_stavno_payment_report" model="ir.actions.act_window">
+            <field name="name">1Stavno Payment Report</field>
+            <field name="res_model">stavno.payment.report</field>
+            <field name="view_mode">tree,graph,pivot</field>
+            <field name="search_view_id" ref="view_stavno_payment_report_search"/>
+        </record>
+
+        <!-- Action for Wizard -->
+        <record id="action_stavno_payment_report_wizard" model="ir.actions.act_window">
+            <field name="name">Generate 1Stavno Payment Report</field>
+            <field name="res_model">stavno.payment.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_stavno_payment_report"
+                  name="1Stavno Payment Report"
+                  parent="account.menu_finance_reports"
+                  action="action_stavno_payment_report_wizard"
+                  sequence="10"/>
+    </data>
+</odoo>
